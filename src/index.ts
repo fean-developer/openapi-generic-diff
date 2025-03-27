@@ -29,8 +29,10 @@ function compareYamlFiles(file1: any, file2: any): any {
     const diff = deepDiff.diff(file1, file2) || [];
     
     if (diff.length > 0) {
+        console.log("✅ Nenhuma diferença encontrada.");
+    } else {
         console.log("🛑 Diferenças encontradas:");
-       // console.log(JSON.stringify(diff, null, 2));
+        // console.log(JSON.stringify(diff, null, 2));
     }
 
     return diff;
@@ -56,36 +58,23 @@ async function run() {
         
         if (isOpenAPI(spec1) && isOpenAPI(spec2)) {
             console.log("🔍 Comparação OpenAPI...");
-            console.log(formatDiffLog(diff,spec1,spec2)); // Exibe diferença OpenAPI
+            console.log(formatDiffLog(diff));
         } else {
             console.log("🔍 Comparação YAML genérico...");
-            console.log(formatYamlDiffLog(diff,spec1,spec2)); // Exibe diferença normal
+            console.log(formatYamlDiffLog(diff)); // Exibe diferença normal
         }
     } catch (error: any) {
         console.log(`❌ Erro na comparação: ${error.message}`);
     }
 }
 
-function formatDiffLog(diff: Change[], file1?: any,file2?: any): string {
-    
+function formatDiffLog(diff: Change[]): string {
+    if (diff.length === 0) return "Nenhuma diferença encontrada.";
+
     let output = "";
     let addedCount = 0;
     let removedCount = 0;
     let modifiedCount = 0;
-    
-    if (diff.length === 0) {
-
-        if (isOpenAPI(file1) && isOpenAPI(file2)) {
-            output = Header.printHeader(output,HeaderData["OpenApi"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        } else {
-            output = Header.printHeader(output,HeaderData["Generic"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        }
-        return output;
-    }
 
     // Cabeçalho
     output = Header.printHeader(output,HeaderData["OpenApi"]);
@@ -150,27 +139,14 @@ function formatDiffLog(diff: Change[], file1?: any,file2?: any): string {
 
 
 
-function formatYamlDiffLog(diff: Change[],file1?: any,file2?: any): string {
-    
+function formatYamlDiffLog(diff: Change[]): string {
+    if (diff.length === 0) return "Nenhuma diferença encontrada.";
+
     let output = "";
-    
+
     let addedCount = 0;
     let removedCount = 0;
     let modifiedCount = 0;
-    
-    if (diff.length === 0) {
-
-        if (isOpenAPI(file1) && isOpenAPI(file2)) {
-            output = Header.printHeader(output,HeaderData["OpenApi"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        } else {
-            output = Header.printHeader(output,HeaderData["Generic"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        }
-        return output;
-    }
 
     // Cabeçalho
     output = Header.printHeader(output,HeaderData["Generic"]);
