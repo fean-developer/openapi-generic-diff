@@ -1,3 +1,5 @@
+import { DiffLog } from "src/interfaces/index.js";
+
 export const HeaderData = {
     OpenApi: {
         type: "OpenApi",
@@ -10,3 +12,9 @@ export const HeaderData = {
         description: "Mudanças detectadas na estrutura do arquivo."
     }
 }
+
+export const diffLog: DiffLog = {
+    added: [],
+    removed: [],
+    modified: []
+};

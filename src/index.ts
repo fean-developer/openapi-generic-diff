@@ -5,7 +5,7 @@ import * as deepDiff from 'deep-diff';
 import { Colors, Change, DiffLog } from './interfaces/index.js';
 import { Footer } from './commons/footer.js';
 import { Header } from './commons/header.js';
-import { HeaderData } from './helpers/Helpers.js';
+import { diffLog, HeaderData } from './helpers/Helpers.js';
 import * as core from '@actions/core';
 
 
@@ -28,8 +28,23 @@ function loadFile(path: string): any {
 function compareYamlFiles(file1: any, file2: any): any {
     const diff = deepDiff.diff(file1, file2) || [];
     
+    let output = "";
+    let addedCount = 0;
+    let removedCount = 0;
+    let modifiedCount = 0;
+
+    
     if (diff.length === 0) {
-        console.log("✅ Nenhuma diferença encontrada.");
+        if (isOpenAPI(file1) && isOpenAPI(file2)) {
+            output = Header.printHeader(output,HeaderData["OpenApi"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        } else {
+            output = Header.printHeader(output,HeaderData["Generic"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        }
+       
     } else {
         console.log("🛑 Diferenças encontradas:");
         // console.log(JSON.stringify(diff, null, 2));
@@ -78,12 +93,6 @@ function formatDiffLog(diff: Change[]): string {
 
     // Cabeçalho
     output = Header.printHeader(output,HeaderData["OpenApi"]);
-
-    const diffLog: DiffLog = {
-        added: [],
-        removed: [],
-        modified: []
-    };
 
     diff.forEach(change => {
         const path = change.path?.join(" -> ") || "(desconhecido)";
