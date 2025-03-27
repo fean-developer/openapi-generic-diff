@@ -11,7 +11,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "clean":"rm -rf dist",
+    "clean": "rm -rf dist",
     "transpile": "tsc -p .",
     "package": "ncc build src/index.ts --source-map --minify --no-cache --out dist",
     "build": "npm run clean && npm run transpile && npm run package",
