@@ -1,0 +1,26 @@
+name: Node JS File Compare
+description: Compara dois arquivos e retorna o resultado no console
+author: Francisco Nascimento <d19sp.developer@gmail.com>
+
+branding:
+  icon: 'thermometer'
+  color: 'white'
+
+inputs:
+  file_path_base:
+    description: 'Arquivo base para comparação'
+    required: true
+  file_path_target:
+    description: 'Arquivo alvo para comparação'
+    required: true
+  destination-environment:
+    description: 'Ambiente de execução'
+    required: false
+
+outputs:
+  result:
+    description: 'Resultado extraído da comparação'
+
+runs:
+  using: node20
+  main: dist/index.js
