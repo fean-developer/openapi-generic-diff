@@ -44,6 +44,7 @@ function compareYamlFiles(file1: any, file2: any): any {
             output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
             output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
         }
+        return output;
        
     } else {
         console.log("🛑 Diferenças encontradas:");
