@@ -5,7 +5,7 @@ import * as deepDiff from 'deep-diff';
 import { Colors, Change, DiffLog } from './interfaces/index.js';
 import { Footer } from './commons/footer.js';
 import { Header } from './commons/header.js';
-import { diffLog, HeaderData } from './helpers/Helpers.js';
+import { HeaderData, diffLog } from './helpers/Helpers.js';
 import * as core from '@actions/core';
 
 
@@ -28,27 +28,9 @@ function loadFile(path: string): any {
 function compareYamlFiles(file1: any, file2: any): any {
     const diff = deepDiff.diff(file1, file2) || [];
     
-    let output = "";
-    let addedCount = 0;
-    let removedCount = 0;
-    let modifiedCount = 0;
-
-    
-    if (diff.length === 0) {
-        if (isOpenAPI(file1) && isOpenAPI(file2)) {
-            output = Header.printHeader(output,HeaderData["OpenApi"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        } else {
-            output = Header.printHeader(output,HeaderData["Generic"]);
-            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
-            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
-        }
-        return output;
-       
-    } else {
+    if (diff.length > 0) {
         console.log("🛑 Diferenças encontradas:");
-        // console.log(JSON.stringify(diff, null, 2));
+       // console.log(JSON.stringify(diff, null, 2));
     }
 
     return diff;
@@ -74,26 +56,40 @@ async function run() {
         
         if (isOpenAPI(spec1) && isOpenAPI(spec2)) {
             console.log("🔍 Comparação OpenAPI...");
-            console.log(formatDiffLog(diff));
+            console.log(formatDiffLog(diff,spec1,spec2)); // Exibe diferença OpenAPI
         } else {
             console.log("🔍 Comparação YAML genérico...");
-            console.log(formatYamlDiffLog(diff)); // Exibe diferença normal
+            console.log(formatYamlDiffLog(diff,spec1,spec2)); // Exibe diferença normal
         }
     } catch (error: any) {
         console.log(`❌ Erro na comparação: ${error.message}`);
     }
 }
 
-function formatDiffLog(diff: Change[]): string {
-    if (diff.length === 0) return "Nenhuma diferença encontrada.";
-
+function formatDiffLog(diff: Change[], file1?: any,file2?: any): string {
+    
     let output = "";
     let addedCount = 0;
     let removedCount = 0;
     let modifiedCount = 0;
+    
+    if (diff.length === 0) {
+
+        if (isOpenAPI(file1) && isOpenAPI(file2)) {
+            output = Header.printHeader(output,HeaderData["OpenApi"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        } else {
+            output = Header.printHeader(output,HeaderData["Generic"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        }
+        return output;
+    }
 
     // Cabeçalho
     output = Header.printHeader(output,HeaderData["OpenApi"]);
+
 
     diff.forEach(change => {
         const path = change.path?.join(" -> ") || "(desconhecido)";
@@ -154,23 +150,31 @@ function formatDiffLog(diff: Change[]): string {
 
 
 
-function formatYamlDiffLog(diff: Change[]): string {
-    if (diff.length === 0) return "Nenhuma diferença encontrada.";
-
+function formatYamlDiffLog(diff: Change[],file1?: any,file2?: any): string {
+    
     let output = "";
-
+    
     let addedCount = 0;
     let removedCount = 0;
     let modifiedCount = 0;
+    
+    if (diff.length === 0) {
+
+        if (isOpenAPI(file1) && isOpenAPI(file2)) {
+            output = Header.printHeader(output,HeaderData["OpenApi"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        } else {
+            output = Header.printHeader(output,HeaderData["Generic"]);
+            output += `╟${" ".repeat(24)}"✅ Nenhuma diferença encontrada."${" ".repeat(30)}╢\n`;
+            output = Footer.printFooter({ output, addedCount, removedCount, modifiedCount });
+        }
+        return output;
+    }
 
     // Cabeçalho
     output = Header.printHeader(output,HeaderData["Generic"]);
 
-    const diffLog: DiffLog = {
-        added: [],
-        removed: [],
-        modified: []
-    };
 
     diff.forEach(change => {
         const path = change.path?.join(" -> ") || "(desconhecido)";
