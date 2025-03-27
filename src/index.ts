@@ -1,12 +1,12 @@
 //import * as core from '@actions/core';
 import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+import  load  from 'js-yaml';
 import * as deepDiff from 'deep-diff';
 import { Colors, Change, DiffLog } from './interfaces/index.js';
 import { Footer } from './commons/footer.js';
 import { Header } from './commons/header.js';
 import { HeaderData } from './helpers/Helpers.js';
-import core from '@actions/core';
+import * as core from '@actions/core';
 
 
 function isOpenAPI(doc: any): boolean {
@@ -17,7 +17,7 @@ function isOpenAPI(doc: any): boolean {
 function loadFile(path: string): any {
     try {
         const content = fs.readFileSync(path, 'utf8');
-        const parsed = path.endsWith('.yaml') || path.endsWith('.yml') ? yaml.load(content) : JSON.parse(content);
+        const parsed = path.endsWith('.yaml') || path.endsWith('.yml') ? load(content) : JSON.parse(content);
         return parsed;
     } catch (error: any) {
         console.log(`❌ Erro ao carregar arquivo ${path}: ${error.message}`);
